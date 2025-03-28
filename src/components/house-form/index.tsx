@@ -17,7 +17,7 @@ const HouseForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Initialize form
+  // Initializing form
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {

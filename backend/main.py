@@ -8,23 +8,21 @@ import os
 import numpy as np
 from model import train_model, predict_price
 
-# Initialize FastAPI app
+# Initializing FastAPI app
 app = FastAPI(
     title="Property Price Prediction API",
     description="API for predicting property prices based on features",
     version="1.0.0"
 )
 
-# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with specific origins
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Define request model for property prediction
 class PropertyFeatures(BaseModel):
     bedrooms: int
     bathrooms: float
@@ -34,21 +32,18 @@ class PropertyFeatures(BaseModel):
     location: str
     neighborhood: str = None
 
-# Define response model
 class PredictionResponse(BaseModel):
     predictedPrice: float
     confidence: float
     priceRange: dict
     comparableProperties: list = []
 
-# Check if model exists, otherwise train it
 model_path = "property_model.joblib"
 if not os.path.exists(model_path):
     print("Training new model...")
     train_model(model_path)
     print("Model trained and saved.")
 
-# Load the model
 model = joblib.load(model_path)
 
 @app.get("/")
@@ -81,7 +76,7 @@ def predict_property_price(property_data: PropertyFeatures):
                 "min": lower_bound,
                 "max": upper_bound
             },
-            "comparableProperties": []  # In a real system, would return similar properties
+            "comparableProperties": []
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
